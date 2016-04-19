@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <package name="user" namespace="/user" extends="default">
+    	<!-- 用户登录 -->
+    	<action name="userLogin" class="com.xdtech.platform.user.action.UserAction" method="userLogin">
+    		<interceptor-ref name="openOperStrack"></interceptor-ref>
+        </action>
+    	<!-- 用户手机发送登录验证码 -->
+    	<action name="checkResendCode" class="com.xdtech.platform.user.action.UserAction" method="checkResendCode">
+    		<interceptor-ref name="openOperStrack"></interceptor-ref>
+        </action>
+    	<!-- 用户手机注册 -->
+    	<action name="userPhoneZhuCe" class="com.xdtech.platform.user.action.UserAction" method="userPhoneZhuCe">
+    		<interceptor-ref name="openOperStrack"></interceptor-ref>
+        </action>
+    	<!-- 用户手机登录 -->
+    	<action name="userPhoneLogin" class="com.xdtech.platform.user.action.UserAction" method="userPhoneLogin">
+    		<interceptor-ref name="openOperStrack"></interceptor-ref>
+        </action>
+    	<!-- 选择品牌页面 -->
+    	<action name="flashStyle" class="com.xdtech.platform.user.action.UserAction" method="flashStyle">
+    		<interceptor-ref name="openOperStrack"></interceptor-ref>
+        </action>
+        <action name="noLogin" class="com.xdtech.platform.user.action.UserAction" method="noLogin">
+    		<interceptor-ref name="openOperStrack"></interceptor-ref>
+        </action>
+        <action name="uploadImage" class="com.xdtech.platform.user.action.UserAction" method="uploadImage">
+    		<interceptor-ref name="fileUploadOperStrack"></interceptor-ref>
+        </action>
+        <!-- 修改用户昵称 -->
+        <action name="editTrueName" class="com.xdtech.platform.user.action.UserAction" method="editTrueName">
+    		<interceptor-ref name="fileUploadOperStrack"></interceptor-ref>
+        </action>
+        <action name="saveUserCarInfo" class="com.xdtech.platform.user.action.UserAction" method="saveUserCarInfo">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <action name="delUserCarInfo" class="com.xdtech.platform.user.action.UserAction" method="delUserCarInfo">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <action name="logOut" class="com.xdtech.platform.user.action.UserAction" method="logOut">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+	</package>
+	
+</struts>

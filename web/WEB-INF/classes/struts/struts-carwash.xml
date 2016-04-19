@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="carwash" namespace="/carwash" extends="default">
+		<!-- 洗车商家列表 -->
+		<action name="list" class="com.xdtech.platform.carwash.action.CarwashAction" method="list">
+			<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!-- 商家首页洗车服务 -->
+		<action name="listShopCarwash" class="com.xdtech.platform.carwash.action.CarwashAction" method="listShopCarwash">
+			<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!-- 服务详细 -->
+		<action name="listProjInfo" class="com.xdtech.platform.carwash.action.CarwashAction" method="listProjInfo">
+			<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!--地图显示洗车所有商家-->
+		<action name="findAllShop" class="com.xdtech.platform.carwash.action.CarwashAction" method="findAllShop">
+			<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+	</package>
+</struts>

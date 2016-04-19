@@ -1,0 +1,376 @@
+﻿drop view IF EXISTS gc_favorite_view;
+drop view IF EXISTS gc_favorite_photo_view;
+create view gc_favorite_photo_view as
+(
+select styleid,path from `gc_vehiclephoto` where firstshow=1 group by styleid 
+);
+create view gc_favorite_view as
+(
+ select `t1`.`favoriteId` AS `favoriteId`,`t1`.`styleId` AS `styleId`,`t1`.`shopId` AS `shopId`,`t1`.`userId` AS `userId`,`t2`.`shopName` AS `shopName`,`t3`.`brandName` AS `brandName`,`t4`.`styleName` AS `styleName`,`t5`.`path` AS `path`,`t6`.`webPrice` AS `webPrice`,`t1`.`createTime` AS `createTime`,`t1`.`deleted` AS `deleted` 
+from  ( `gc_favorite` t1,`gc_shop` t2, `gc_vehiclebrand` t3,`gc_vehiclestyle` `t4`,
+`gc_shopprice` `t6`)  left join gc_favorite_photo_view t5 on t5.styleid=t1.styleid
+ where `t1`.`shopId` = `t2`.`shopId`
+and  `t1`.`brandId` = `t3`.`brandId`
+and `t1`.`styleId` = `t4`.`styleId`
+ and `t1`.`shopId` = `t6`.`shopId` and `t1`.`styleId` = `t6`.`styleId`
+);
+ update gc_shoppricechk  set state = 2 where state is null;
+ create index gc_shopPrice_brandId on gc_shopPrice ( brandid);
+ alter table gc_orderform modify column visaNo varchar(50);
+ alter table gc_loanAppl add repayDetail varchar(255);
+ alter table `gc_loanappllog` add remark varchar(255);
+ alter table gc_applicantInfo add brandid int;
+alter table gc_applicantInfo add deptid int;
+alter table gc_applicantInfo add styleid int;
+create index gc_shopvs_styleId on gc_shopvs(styleid);
+create index gc_shopvs_shopId on gc_shopvs(shopid);
+alter table gc_content add description varchar(2000);
+
+alter table gc_searchcar add hitCount int;
+alter table gc_loanAppl add needHomeVisit int;
+alter table gc_searchcar add hitCount int;
+alter table gc_shop modify column brand varchar(4000);
+
+CREATE PROCEDURE synSearchCar()
+begin 
+     declare  v_styleid int;
+     declare  v_stylename varchar(200);
+     declare v_deptid int;
+     declare v_brandid int;
+     declare v_displacement decimal(3,2);
+     declare v_gearbox varchar(60);
+     declare v_levels int;
+     declare v_brandstyle varchar(30);
+     declare v_path    varchar(255);
+     declare v_shopprice decimal(18,2);
+     declare v_webprice decimal(18,2);
+     declare v_hitcount int;
+     declare v_count int ;
+     declare done int default 0;
+     
+     declare findsearchcar cursor for 
+     select t1.styleid as styleid,t1.stylename as stylename, t1.brandId as brandid,t1.deptid as deptid,t2.path as path,t1.levels as levels,t3.brandStyle as brandStyle,t1.gearbox as gearbox,
+				t1.displacement as displacement from gc_vehiclestyle t1 left join gc_vehiclephoto t2
+				on(t1.styleId = t2.styleId and t1.deleted = 0 and t2.deleted = 0 and t2.firstshow = 1)
+				left join gc_vehiclebrand t3 on (t1.brandId = t3.brandId and t3.deleted = 0);
+     declare CONTINUE HANDLER FOR NOT FOUND SET done=1;	 
+
+                create table temp_searchcar(styleid int,hitcount int);
+                insert into temp_searchcar(styleid,hitcount) select styleid,hitcount from gc_searchcar ;
+                create index idx_temp_searchcar on temp_searchcar(styleid);
+		delete from gc_searchcar;
+
+		open findsearchcar; 
+         cursor_loop:loop
+          FETCH findsearchcar into v_styleid,v_stylename,  v_brandid,v_deptid,v_path,v_levels,v_brandStyle,v_gearbox,v_displacement ; 
+  
+         if done=1 then
+           leave cursor_loop;
+        end if;
+
+
+          begin 
+             declare getprice cursor for select min(webPrice),min(shopPrice) from gc_shopprice where styleId=v_styleid;
+             declare getPricecount cursor for select count(*)  from gc_shopprice where styleId=v_styleid;		
+             declare getcount cursor for select count(*)  from gc_searchcar where styleId=v_styleid;	
+            
+             open getPricecount; 
+             fetch getPricecount  into v_count;       
+             close getPricecount;  
+
+             if (v_count=0) then
+                set v_webprice=null;
+                set v_shopprice=null;
+             else
+                open getprice; 
+                fetch getprice into v_webprice,v_shopprice;       
+                close getprice; 
+             end if;
+             open getcount; 
+             fetch getcount into v_count;       
+             close getcount;  
+             if(v_count=0) then
+	             insert into gc_searchcar(
+	                styleId      ,
+	                styleName    ,
+	                deptId       ,
+	                brandId      ,
+	                displacement ,
+	                gearbox      ,
+	                levels       ,
+	                brandStyle   ,
+	                path         ,
+	                shopPrice    ,
+	                webPrice    )
+	             values( 
+	                v_styleId      ,
+	                v_styleName    ,
+	                v_deptId       ,
+	                v_brandId      ,
+	                v_displacement ,
+	                v_gearbox      ,
+	                v_levels       ,
+	                v_brandStyle   ,
+	                v_path         ,
+	                v_shopPrice    ,
+	                v_webPrice    
+	                );
+             end if;   
+          end;    
+     end loop;   
+		 close findsearchcar;
+  update gc_searchcar set hitcount=(select hitcount from temp_searchcar where temp_searchcar.styleid = gc_searchcar.styleid);
+  update gc_searchcar  set havepic='1' where path is not null;
+  update gc_searchcar  set havepic='0' where path is null; 
+  drop table temp_searchcar;	
+		 commit;
+end
+
+drop table gc_ipcodes;
+
+CREATE TABLE
+    gc_ipcodes
+    (
+        id INT NOT NULL AUTO_INCREMENT,
+        startip VARCHAR(255),
+        endip VARCHAR(255),
+        provicecode VARCHAR(20),
+        provicename VARCHAR(50),
+        citycode VARCHAR(20),
+        cityname VARCHAR(50),
+        remark VARCHAR(255),
+        PRIMARY KEY (id)
+    )
+    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+alter table gc_searchcar add havePic varchar(2);
+
+//2012-07-30
+alter table gc_applicantinfo modify gearbox varchar(200);
+
+//2012-08-02
+
+alter table gc_shopchk modify brand varchar(2000);
+alter table gc_vehiclebrand modify logo varchar(400);
+
+alter table gc_applicantInfo drop column sqrzj;
+alter table gc_applicantInfo add  sqrzj varchar(50);
+alter table gc_applicantInfo drop column pozj;
+alter table gc_applicantInfo add  pozj varchar(50);
+alter table gc_applicantInfo drop column qtrzj;
+alter table gc_applicantInfo add  qtrzj varchar(50);
+alter table gc_applicantInfo drop column dbrzj;
+alter table gc_applicantInfo add  dbrzj varchar(50);
+alter table gc_applicantInfo drop column lhz;
+alter table gc_applicantInfo add  lhz varchar(50);
+alter table gc_applicantInfo drop column mstjs;
+alter table gc_applicantInfo add  mstjs varchar(50);
+alter table gc_applicantInfo drop column fypjs;
+alter table gc_applicantInfo add  fypjs varchar(50);
+alter table gc_applicantInfo drop column dtxyzm;
+alter table gc_applicantInfo add  dtxyzm varchar(50);
+alter table gc_applicantInfo drop column dszm;
+alter table gc_applicantInfo add  dszm varchar(50);
+alter table gc_applicantInfo drop column sqrjz;
+alter table gc_applicantInfo add  sqrjz varchar(50);
+alter table gc_applicantInfo drop column pojz;
+alter table gc_applicantInfo add  pojz varchar(50);
+alter table gc_applicantInfo drop column qtrjz;
+alter table gc_applicantInfo add  qtrjz varchar(50);
+alter table gc_applicantInfo drop column fcz;
+alter table gc_applicantInfo add  fcz varchar(50);
+alter table gc_applicantInfo drop column tdsyz;
+alter table gc_applicantInfo add  tdsyz varchar(50);
+alter table gc_applicantInfo drop column gfht;
+alter table gc_applicantInfo add  gfht varchar(50);
+alter table gc_applicantInfo drop column qtfczm;
+alter table gc_applicantInfo add  qtfczm varchar(50);
+alter table gc_applicantInfo drop column yhls;
+alter table gc_applicantInfo add  yhls varchar(50);
+alter table gc_applicantInfo drop column cdzm;
+alter table gc_applicantInfo add  cdzm varchar(50);
+alter table gc_applicantInfo drop column cdjqzm;
+alter table gc_applicantInfo add  cdjqzm varchar(50);
+alter table gc_applicantInfo drop column fdzm;
+alter table gc_applicantInfo add  fdzm varchar(50);
+alter table gc_applicantInfo drop column fdjqzm;
+alter table gc_applicantInfo add  fdjqzm varchar(50);
+alter table gc_applicantInfo drop column qtdkzm;
+alter table gc_applicantInfo add  qtdkzm varchar(50);
+alter table gc_applicantInfo drop column qtdkjqzm;
+alter table gc_applicantInfo add  qtdkjqzm varchar(50);
+alter table gc_applicantInfo drop column gzsrmx;
+alter table gc_applicantInfo add  gzsrmx varchar(50);
+alter table gc_applicantInfo drop column grsdsd;
+alter table gc_applicantInfo add  grsdsd varchar(50);
+alter table gc_applicantInfo drop column cyczmx;
+alter table gc_applicantInfo add  cyczmx varchar(50);
+alter table gc_applicantInfo drop column sgzb;
+alter table gc_applicantInfo add  sgzb varchar(50);
+alter table gc_applicantInfo drop column car;
+alter table gc_applicantInfo add  car varchar(50);
+alter table gc_applicantInfo drop column house;
+alter table gc_applicantInfo add  house varchar(50);
+alter table gc_applicantInfo drop column gpjj;
+alter table gc_applicantInfo add  gpjj varchar(50);
+alter table gc_applicantInfo drop column sybxd;
+alter table gc_applicantInfo add  sybxd varchar(50);
+alter table gc_applicantInfo drop column yjzq;
+alter table gc_applicantInfo add  yjzq varchar(50);
+alter table gc_applicantInfo drop column gsyyzz;
+alter table gc_applicantInfo add  gsyyzz varchar(50);
+alter table gc_applicantInfo drop column yzbg;
+alter table gc_applicantInfo add  yzbg varchar(50);
+alter table gc_applicantInfo drop column gszc;
+alter table gc_applicantInfo add  gszc varchar(50);
+alter table gc_applicantInfo drop column gsswdj;
+alter table gc_applicantInfo add  gsswdj varchar(50);
+alter table gc_applicantInfo drop column wszm;
+alter table gc_applicantInfo add  wszm varchar(50);
+alter table gc_applicantInfo drop column cwbb;
+alter table gc_applicantInfo add  cwbb varchar(50);
+alter table gc_applicantInfo drop column cwht;
+alter table gc_applicantInfo add  cwht varchar(50);
+alter table gc_applicantInfo drop column qtjyzm;
+alter table gc_applicantInfo add  qtjyzm varchar(50);
+alter table gc_applicantInfo drop column rzxdkzm;
+alter table gc_applicantInfo add  rzxdkzm varchar(50);
+alter table gc_applicantInfo drop column rzxdkjqzm;
+alter table gc_applicantInfo add  rzxdkjqzm varchar(50);
+alter table gc_applicantInfo drop column zxqydkzm;
+alter table gc_applicantInfo add  zxqydkzm varchar(50);
+alter table gc_applicantInfo drop column zxqydkjqzm;
+alter table gc_applicantInfo add  zxqydkjqzm varchar(50);
+alter table gc_applicantInfo drop column wlyhmxzm;
+alter table gc_applicantInfo add  wlyhmxzm varchar(50);
+alter table gc_applicantInfo drop column wlyhmxjqzm;
+alter table gc_applicantInfo add  wlyhmxjqzm varchar(50);
+alter table gc_applicantInfo drop column qtzxzm;
+alter table gc_applicantInfo add  qtzxzm varchar(50);
+alter table gc_applicantInfo drop column cyyhkmx;
+alter table gc_applicantInfo add  cyyhkmx varchar(50);
+alter table gc_applicantInfo drop column jhz;
+alter table gc_applicantInfo add  jhz varchar(50);
+alter table gc_loanappl drop column bankProve;
+alter table gc_loanappl add  bankProve varchar(50);
+alter table gc_applicantInfo add  downloadFlag varchar(2);
+
+//2012-08-03
+alter table gc_applicantinfo add cfReasons varchar(10);
+alter table gc_loanappl add cfReasons varchar(10);
+DROP TABLE IF EXISTS `gc_agencyad`;
+CREATE TABLE `gc_agencyad` (
+  `adId` varchar(255) NOT NULL,
+  `adSort` varchar(255) default NULL,
+  `content` text,
+  `createTime` datetime default NULL,
+  `createby` varchar(255) default NULL,
+  `deleted` int(11) NOT NULL,
+  `title` varchar(255) default NULL,
+  `updateTime` datetime default NULL,
+  `organId` int(11) NOT NULL,
+  `organName` varchar(200) default NULL,
+  PRIMARY KEY  (`adId`),
+  UNIQUE KEY `paramId` (`adId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `gc_agencyadchk`;
+CREATE TABLE `gc_agencyadchk` (
+  `paramId` varchar(255) NOT NULL,
+  `adSort` varchar(255) default NULL,
+  `content` text,
+  `createTime` datetime default NULL,
+  `createby` varchar(255) default NULL,
+  `deleted` int(11) NOT NULL,
+  `remark` varchar(255) default NULL,
+  `state` int(11) default NULL,
+  `title` varchar(255) default NULL,
+  `updateTime` datetime default NULL,
+  `taskId` varchar(255) default NULL,
+  `organId` int(11) default NULL,
+  `organName` varchar(255) default NULL,
+  PRIMARY KEY  (`paramId`),
+  UNIQUE KEY `paramId` (`paramId`),
+  KEY `FK16D27DDB30744F21` (`taskId`),
+  CONSTRAINT `FK16D27DDB30744F21` FOREIGN KEY (`taskId`) REFERENCES `gc_task` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `xd_enumeration` VALUES ('4028815f38ea36120138ea400da80002', 'reasons', '管理员', '2012-08-03 10:11:02', '0', '', '贷款重复提交原因', '1', 'reasons', '贷款重复提交原因', '22');
+INSERT INTO `xd_enumeration` VALUES ('4028815f38ea36120138ea419174000b', 'zltjcw', '管理员', '2012-08-03 10:12:41', '0', '', '申请资料提交错误', '4028815f38ea36120138ea400da80002', '1', '申请资料提交错误', '1');
+INSERT INTO `xd_enumeration` VALUES ('4028815f38ea36120138ea423019000d', 'ggsfje', '管理员', '2012-08-03 10:13:22', '0', '', '更改首付金额', '4028815f38ea36120138ea400da80002', '2', '更改首付金额', '2');
+INSERT INTO `xd_enumeration` VALUES ('4028815f38ea36120138ea427800000f', 'qita', '管理员', '2012-08-03 10:13:40', '0', '', '其他', '4028815f38ea36120138ea400da80002', '3', '其他', '3');
+INSERT INTO `xd_enumeration` VALUES ('402880e638e5c7570138e5cef7780003', 'agencyad', '管理员', '2012-08-02 13:29:02', '0', '', '金融机构广告分类', '1', '1', '1', '223');
+INSERT INTO `xd_enumeration` VALUES ('402880e638e5c7570138e5cf89d40006', 'sortfature', '管理员', '2012-08-02 13:29:40', '0', '', '产品特征', '402880e638e5c7570138e5cef7780003', '1', '1', '1');
+INSERT INTO `xd_enumeration` VALUES ('402880e638e5c7570138e5cfe6f50008', 'advantage', '管理员', '2012-08-02 13:30:03', '0', '', '产品优势', '402880e638e5c7570138e5cef7780003', '2', '2', '2');
+INSERT INTO `xd_enumeration` VALUES ('402880e638e5c7570138e5d05a0f000a', 'loanpolicy', '管理员', '2012-08-02 13:30:33', '0', '', '贷款政策', '402880e638e5c7570138e5cef7780003', '3', '3', '3');
+
+
+create or replace view gc_shopstyle_view
+as
+select `t`.`spId` AS `id`,`t`.`shopId` AS `shopId`,`t`.`shopName` AS `shopName`,`t`.`deptId` AS `deptId`,`t`.`deptName` AS `deptName`,`t`.`styleId` AS `styleId`,`t`.`styleName` AS `styleName`,`t`.`shopPrice` AS `shopPrice`,`t`.`webPrice` AS `webPrice`,`t`.`stock` AS `stock`,`t`.`bookingTime` AS `bookTime`,`b`.`path` AS `path`,`t`.`createTime` AS `createTime` from (`gc_shopprice` `t` left join `gc_vehiclephoto` `b` on(((`t`.`styleId` = `b`.`styleId`) and (`b`.`firstshow` = 1) and (`b`.`deleted` = 0)))) where (`t`.`deleted` = 0)
+
+//2012-08-09
+create index gc_shopprice_webprice on gc_shopprice(webPrice);
+
+create index gc_shopprice_deleted on gc_shopprice(deleted);
+
+//2012-08-09
+alter table gc_applicantInfo add  loanProID varchar(20);
+alter table gc_applicantInfo add  loanProduName varchar(50);
+alter table gc_loanappl add  loanProID varchar(20);
+
+//2012-08-16
+update gc_shop set cityname='襄阳' where cityname like '%襄樊%'
+update gc_shop set cityNo='110102',cityName='西城区' where cityName like '%崇文%'
+update gc_area set areaname='襄阳' where areaname='襄樊'
+delete from  gc_area where areaname like '%崇文%'
+delete from  gc_area where areaname like '%宣武%'
+
+//2012-08-24
+alter table gc_loanProduChk add maxFpayScale tinyint;
+alter table gc_loanProdu add  maxFpayScale tinyint;
+alter table xd_actionlog modify content varchar(1000);
+
+alter table gc_organ add banner varchar(800);
+alter table gc_organ add images varchar(2000);
+
+alter table gc_orderform add sjFpayMoney decimal(18,2);
+alter table gc_orderform add sjdkje decimal(18,2);
+
+alter table gc_organchk add  banner varchar(200);
+alter table gc_organchk add  images varchar(800);
+//2012-09-01
+alter table gc_loanappl modify  loanProID varchar(100);
+alter table gc_applicantInfo modify  loanProID varchar(100);
+
+//2012-09-05
+alter table gc_user add  kaiXinUid varchar(100);
+
+//2012-09-10
+alter table gc_user add  qqUid varchar(100);
+
+//2012-09-11
+create table ip_data(id int(20) primary key not null auto_increment,ipstart bigint(150),ipend bigint(150),region varchar(150),address varchar(150));
+
+//2012-09-24
+alter table gc_user add  telePhone varchar(20);
+
+//2012-09-25
+alter table gc_user add sinaUid varchar(100);
+
+--------------------------------------zxq-----------------------------
+//2012-09-26
+alter table gc_user add  userimg  varchar(300);
+
+//2012-10-09
+alter table gc_user add net163Uid varchar(100);
+alter table gc_loanAppl add tel varchar(20);
+
+//2012-10-25
+alter table gc_shopprice add total int(32);
+
+
+//2012-11-23
+
+alter table gc_content  add  videourl   varchar(300);
+alter table gc_contentPublish  add  videourl   varchar(300);
+
+
+

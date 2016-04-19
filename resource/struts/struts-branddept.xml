@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="branddept" namespace="/branddept" extends="default">
+		<action name="brandList" class="com.xdtech.platform.branddept.action.BrandDeptAction" method="brandList">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<action name="deptList" class="com.xdtech.platform.branddept.action.BrandDeptAction" method="deptList">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+	</package>
+</struts>

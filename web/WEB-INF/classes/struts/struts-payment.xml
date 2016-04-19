@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="payment" namespace="/payment" extends="default">
+		<action name="addMinormtShopping" class="com.xdtech.platform.pay.action.PayMentAction" method="addMinormtShopping">
+		 	<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+		</action>
+		 <!-- 洗车加入购物车 -->
+        <action name="addCarWashShopping" class="com.xdtech.platform.pay.action.PayMentAction" method="addCarWashShopping">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <!-- 封釉镀膜镀晶加入购物车 -->
+        <action name="addGlossCoatShopping" class="com.xdtech.platform.pay.action.PayMentAction" method="addGlossCoatShopping">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <!-- 打蜡加入购物车 -->
+        <action name="addWaxingShopping" class="com.xdtech.platform.pay.action.PayMentAction" method="addWaxingShopping">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+		<!-- 购物车列表 -->
+    	<action name="shoppingCarList" class="com.xdtech.platform.pay.action.PayMentAction" method="shoppingCarList">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <action name="saveShoppingCarList" class="com.xdtech.platform.pay.action.PayMentAction" method="saveShoppingCarList">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <action name="settlementShopping" class="com.xdtech.platform.pay.action.PayMentAction" method="settlementShopping">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <action name="saveOrder" class="com.xdtech.platform.pay.action.PayMentAction" method="saveOrder">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <action name="minPayNow" class="com.xdtech.platform.pay.action.PayMentAction" method="minPayNow">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <!-- 封釉镀膜镀晶立即购买 -->
+        <action name="glossPayNow" class="com.xdtech.platform.pay.action.PayMentAction" method="glossPayNow">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <!-- 洗车立即购买 -->
+        <action name="carWashPayNow" class="com.xdtech.platform.pay.action.PayMentAction" method="carWashPayNow">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <!-- 打蜡立即购买 -->
+        <action name="waxingPayNow" class="com.xdtech.platform.pay.action.PayMentAction" method="waxingPayNow">
+    		<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        </action>
+        <!-- 支付宝网页支付 -->
+        <action name="aliPayMobile" class="com.xdtech.platform.pay.action.PayMentAction" method="aliPayMobile">
+    		<interceptor-ref name="openOperStrack"></interceptor-ref>
+    		<result name="success">/alipayapi.jsp</result>
+        </action>
+        <!-- 支付宝网页支付同步跳转 -->
+        <action name="alipayPageCallBack" class="com.xdtech.platform.pay.action.PayMentAction" method="alipayPageCallBack">
+        	<interceptor-ref name="openOperStrack"></interceptor-ref>
+        	<result name="success">/alipaycallback.jsp</result>
+        </action>
+        <!-- 支付宝钱包支付数据串组装 -->
+        <action name="getAlipayInfo" class="com.xdtech.platform.pay.action.PayMentAction" method="getAlipayInfo">
+        	<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+        	<interceptor-ref name="openOperStrack"></interceptor-ref>
+        </action>
+	</package>
+</struts>

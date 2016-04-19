@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<!-- ognl 调用静态方法zhl+ -->
+    <constant name="struts.ognl.allowStaticMethodAccess" value="false" /> 
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.devMode" value="false" />
+	<include file="struts/struts-xd.xml" />
+	<include file="struts/struts-minormt.xml" />
+	<include file="struts/struts-carwash.xml"/>
+	<include file="struts/struts-gloss.xml" />
+	<include file="struts/struts-waxing.xml" />
+	<include file="struts/struts-order.xml" />
+	<include file="struts/struts-user.xml" />
+	<include file="struts/struts-personalcenter.xml" />
+	<include file="struts/struts-payment.xml" />
+	<include file="struts/struts-branddept.xml" />
+</struts>

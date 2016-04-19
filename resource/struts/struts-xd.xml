@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="default" extends="struts-default,JSON-DEFAULT">
+		<interceptors>
+			<interceptor name="servlet" class="com.xdtech.platform.core.web.interceptor.ServletInterceptor" />
+			<interceptor name="xdException" class="com.xdtech.platform.core.web.interceptor.XDExceptionInteceptor"/>
+			<interceptor name="gadIsLogin" class="com.xdtech.platform.core.web.interceptor.GadIsLoginInterceptor"/>
+			<interceptor-stack name="openOperStrack">
+				<interceptor-ref name="servlet" />
+				<interceptor-ref name="basicStack" />
+			</interceptor-stack>
+			<interceptor-stack name="gadAuthOperStrack">
+				<interceptor-ref name="servlet" />
+				<interceptor-ref name="gadIsLogin" />
+				<interceptor-ref name="basicStack" />
+			</interceptor-stack>
+			<interceptor-stack name="fileUploadOperStrack">
+				<interceptor-ref name="servlet" />
+				<interceptor-ref name="gadIsLogin" />
+				<interceptor-ref name="fileUpload">
+					<!-- 配置允许上传的文件类型  -->  
+                    <param name="allowedTypes">  
+                        image/x-png,image/bmp,image/png,image/gif,image/jpeg,image/pjpeg,image/jpg,application/octet-stream,application/x-shockwave-flash 
+                    </param>  
+                   <!-- 配置允许上传的文件大小 200K -->  
+                    <param name="maximumSize">4096000</param>  
+				</interceptor-ref>
+				<interceptor-ref name="basicStack" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="servlet" />
+		 <global-results>
+			<result name="noLogin" type="redirect">/user/noLogin.dhtml</result>
+		</global-results>
+		<global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error"/>
+        </global-exception-mappings>
+	</package>
+</struts>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="waxing" namespace="/waxing" extends="default">
+    	<!--  2015-03-13 -->
+		<action name="waxingShoplist" class="com.xdtech.platform.waxing.action.WaxingAction" method="waxingShoplist">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!--  2015-03-13 -->
+		<action name="listShopWaxing" class="com.xdtech.platform.waxing.action.WaxingAction" method="listShopWaxing">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!-- 查询打蜡所有商家 -->
+		<action name="findAllShop" class="com.xdtech.platform.waxing.action.WaxingAction" method="findAllShop">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+	</package>
+	
+</struts>

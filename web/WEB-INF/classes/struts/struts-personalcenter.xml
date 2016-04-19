@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="personalcenter" namespace="/personalcenter" extends="default">
+    	<!-- yuanqq 2015-03-23 -->
+		<action name="orderList" class="com.xdtech.platform.personalcenter.action.MtorderAction" method="orderList">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<action name="jifenList" class="com.xdtech.platform.personalcenter.action.MtorderAction" method="jifenList">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<action name="getInitialBrand" class="com.xdtech.platform.personalcenter.action.MtorderAction" method="getInitialBrand">
+		 	<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+		</action>
+		<action name="getDept" class="com.xdtech.platform.personalcenter.action.MtorderAction" method="getDept">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+	</package>
+	
+</struts>

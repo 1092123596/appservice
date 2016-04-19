@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="gloss" namespace="/gloss" extends="default">
+    	<!--  2015-03-13 -->
+		<action name="glossShoplist" class="com.xdtech.platform.glosscoating.action.GlossAction" method="glossShoplist">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!--  2015-03-30 -->
+		<action name="listShopGloss" class="com.xdtech.platform.glosscoating.action.GlossAction" method="listShopGloss">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!--  产品详细 -->
+		<action name="productDetail" class="com.xdtech.platform.glosscoating.action.GlossAction" method="productDetail">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!-- 查询封釉、镀膜、镀晶所有商家 -->
+		<action name="findAllShop" class="com.xdtech.platform.glosscoating.action.GlossAction" method="findAllShop">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+	</package>
+	
+</struts>

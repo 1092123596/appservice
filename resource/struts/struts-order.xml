@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="order" namespace="/order" extends="default">
+    	<!--  2015-03-23 -->
+		<action name="orderList" class="com.xdtech.platform.order.action.OrderAction" method="orderList">
+		 	<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+		</action>
+		<action name="orderCompletedList" class="com.xdtech.platform.order.action.OrderAction" method="orderCompletedList">
+		 	<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+		</action>
+		<action name="commentList" class="com.xdtech.platform.order.action.OrderAction" method="commentList">
+		 	<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+		</action>
+		
+		<!--  2015-03-24 -->
+		<action name="commentState" class="com.xdtech.platform.order.action.OrderAction" method="commentState">
+		 	<interceptor-ref name="openOperStrack"></interceptor-ref>
+		</action>
+		<!--  2015-03-27 -->
+		<action name="orderDeleteDo" class="com.xdtech.platform.order.action.OrderAction" method="orderDeleteDo">
+		 	<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+		</action>
+		<!-- 评论 -->
+		<action name="comment" class="com.xdtech.platform.order.action.OrderAction" method="comment">
+		 	<interceptor-ref name="gadAuthOperStrack"></interceptor-ref>
+		</action>
+	</package>
+	
+</struts>

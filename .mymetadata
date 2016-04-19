@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="appservice"
+  id="myeclipse.1424936117642"
+  context-root="/appservice"
+  j2ee-spec="6.0"
+  archive="appservice.war">
+  <attributes>
+    <attribute name="webrootdir" value="web" />
+  </attributes>
+</project-module>
+
